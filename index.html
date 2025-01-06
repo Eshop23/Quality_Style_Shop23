@@ -63,6 +63,58 @@
             font-size: 1.5rem;
             color: #000;
         }
+        .upload-section {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .upload-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .upload-section label {
+            font-size: 1rem;
+            color: #000;
+        }
+        .upload-section input, .upload-section button {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .upload-section button {
+            background-color: #000;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .upload-section button:hover {
+            background-color: #333;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .product img {
+            max-width: 150px;
+            height: auto;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
         .contact {
             text-align: center;
             margin: 20px;
@@ -91,28 +143,70 @@
         <a href="#">Donna</a>
         <a href="#">Bambino</a>
     </nav>
-    <section class="categories">
-        <div class="category">
-            <img src="https://via.placeholder.com/300" alt="Uomo">
-            <h3><a href="#">Sezione Uomo</a></h3>
-        </div>
-        <div class="category">
-            <img src="https://via.placeholder.com/300" alt="Donna">
-            <h3><a href="#">Sezione Donna</a></h3>
-        </div>
-        <div class="category">
-            <img src="https://via.placeholder.com/300" alt="Bambino">
-            <h3><a href="#">Sezione Bambino</a></h3>
-        </div>
-        <div class="category">
-            <img src="https://via.placeholder.com/300" alt="Accessori">
-            <h3><a href="#">Accessori</a></h3>
-        </div>
+    <section class="upload-section">
+        <h2>Carica un nuovo prodotto</h2>
+        <form id="uploadForm">
+            <label for="productName">Nome del prodotto:</label>
+            <input type="text" id="productName" placeholder="Inserisci il nome" required>
+            <label for="productImages">Immagini del prodotto (fino a 20):</label>
+            <input type="file" id="productImages" accept="image/*" multiple required>
+            <label for="productPrice">Prezzo:</label>
+            <input type="text" id="productPrice" placeholder="€" required>
+            <label for="productSizes">Taglie disponibili:</label>
+            <input type="text" id="productSizes" placeholder="Es. S, M, L" required>
+            <button type="submit">Aggiungi prodotto</button>
+        </form>
+    </section>
+    <section class="products" id="products">
+        <!-- Prodotti caricati dinamicamente -->
     </section>
     <section class="contact">
         <h2>Contatti</h2>
         <p>WhatsApp: <a href="https://wa.me/447440375225" target="_blank">+44 7440375225</a></p>
         <p>Telegram: <a href="https://t.me/TopQualityReplica_shop" target="_blank">t.me/TopQualityReplica_shop</a></p>
     </section>
+    <script>
+        const products = [];
+
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('productName').value;
+            const imageFiles = document.getElementById('productImages').files;
+            const price = document.getElementById('productPrice').value;
+            const sizes = document.getElementById('productSizes').value.split(',').map(size => size.trim());
+
+            const images = Array.from(imageFiles).slice(0, 20).map(file => URL.createObjectURL(file));
+
+            const newProduct = {
+                name,
+                images,
+                price,
+                sizes
+            };
+
+            products.push(newProduct);
+            renderProducts();
+        });
+
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const productHTML = `
+                    <div class="product">
+                        <h3>${product.name}</h3>
+                        <div class="gallery">
+                            ${product.images.map(image => `<img src="${image}" alt="${product.name}">`).join('')}
+                        </div>
+                        <p class="price">Prezzo: €${product.price}</p>
+                        <p class="sizes">Taglie: ${product.sizes.join(', ')}</p>
+                    </div>
+                `;
+                container.innerHTML += productHTML;
+            });
+        }
+    </script>
 </body>
 </html>
