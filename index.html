@@ -33,6 +33,20 @@
         nav a:hover {
             text-decoration: underline;
         }
+        .filters {
+            margin: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+        .filters label {
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+        .filters select {
+            padding: 5px;
+            font-size: 1rem;
+        }
         .products {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -115,6 +129,13 @@
         <a href="#">Donna</a>
         <a href="#">Bambino</a>
     </nav>
+    <section class="filters">
+        <label for="brandFilter">Filtra per marca:</label>
+        <select id="brandFilter">
+            <option value="">Tutti</option>
+        </select>
+        <button onclick="applyBrandFilter()">Applica</button>
+    </section>
     <section class="upload-section">
         <h2>Carica un nuovo prodotto</h2>
         <form id="uploadForm">
@@ -126,6 +147,8 @@
             <input type="text" id="productPrice" placeholder="€" required><br>
             <label for="productSizes">Taglie disponibili:</label><br>
             <input type="text" id="productSizes" placeholder="Es. S, M, L" required><br>
+            <label for="productBrand">Marca:</label><br>
+            <input type="text" id="productBrand" placeholder="Inserisci la marca" required><br>
             <button type="submit">Aggiungi prodotto</button>
         </form>
     </section>
@@ -147,6 +170,7 @@
             const imageInput = document.getElementById('productImage');
             const price = document.getElementById('productPrice').value;
             const sizes = document.getElementById('productSizes').value;
+            const brand = document.getElementById('productBrand').value;
 
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -154,11 +178,13 @@
                     name: name,
                     image: e.target.result,
                     price: price,
-                    sizes: sizes.split(',').map(size => size.trim())
+                    sizes: sizes.split(',').map(size => size.trim()),
+                    brand: brand
                 };
 
                 products.push(newProduct);
                 renderProducts();
+                updateBrandFilter();
             };
 
             if (imageInput.files[0]) {
@@ -166,11 +192,11 @@
             }
         });
 
-        function renderProducts() {
+        function renderProducts(filteredProducts = products) {
             const container = document.getElementById('products');
             container.innerHTML = '';
 
-            products.forEach(product => {
+            filteredProducts.forEach(product => {
                 const productHTML = `
                     <div class="product">
                         <h3>${product.name}</h3>
@@ -178,12 +204,36 @@
                         <div class="details">
                             <p class="price">Prezzo: €${product.price}</p>
                             <p class="size">Taglie: ${product.sizes.join(', ')}</p>
+                            <p class="brand">Marca: ${product.brand}</p>
                         </div>
                     </div>
                 `;
                 container.innerHTML += productHTML;
             });
         }
+
+        function updateBrandFilter() {
+            const brandFilter = document.getElementById('brandFilter');
+            const brands = [...new Set(products.map(product => product.brand))];
+            brandFilter.innerHTML = '<option value="">Tutti</option>';
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+        }
+
+        function applyBrandFilter() {
+            const selectedBrand = document.getElementById('brandFilter').value;
+            if (selectedBrand) {
+                const filteredProducts = products.filter(product => product.brand === selectedBrand);
+                renderProducts(filteredProducts);
+            } else {
+                renderProducts();
+            }
+        }
     </script>
 </body>
 </html>
+
