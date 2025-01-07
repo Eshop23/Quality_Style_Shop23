@@ -81,7 +81,7 @@
             font-size: 1rem;
             color: #000;
         }
-        .upload-section input, .upload-section button {
+        .upload-section input, .upload-section select, .upload-section button {
             padding: 10px;
             font-size: 1rem;
             border: 1px solid #ddd;
@@ -137,9 +137,9 @@
 </head>
 <body>
     <div class="sidebar" id="brandSidebar">
-        <h3>Marche</h3>
+        <h3>Brand</h3>
         <ul id="brandList">
-            <!-- Marche inserite dinamicamente -->
+            <!-- Brand inseriti dinamicamente -->
         </ul>
     </div>
     <div class="main">
@@ -165,6 +165,13 @@
                 <input type="text" id="productSizes" placeholder="Es. S, M, L" required>
                 <label for="productBrand">Marca:</label>
                 <input type="text" id="productBrand" placeholder="Inserisci la marca" required>
+                <label for="productCategory">Categoria:</label>
+                <select id="productCategory" required>
+                    <option value="Uomo">Uomo</option>
+                    <option value="Donna">Donna</option>
+                    <option value="Bambino">Bambino</option>
+                    <option value="Accessori">Accessori</option>
+                </select>
                 <button type="submit">Aggiungi prodotto</button>
             </form>
         </section>
@@ -188,6 +195,7 @@
             const price = document.getElementById('productPrice').value;
             const sizes = document.getElementById('productSizes').value.split(',').map(size => size.trim());
             const brand = document.getElementById('productBrand').value;
+            const category = document.getElementById('productCategory').value;
 
             const images = Array.from(imageFiles).slice(0, 20).map(file => URL.createObjectURL(file));
 
@@ -196,7 +204,8 @@
                 images,
                 price,
                 sizes,
-                brand
+                brand,
+                category
             };
 
             const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -223,6 +232,7 @@
                         <p class="price">Prezzo: €${product.price}</p>
                         <p class="sizes">Taglie: ${product.sizes.join(', ')}</p>
                         <p class="brand">Marca: ${product.brand}</p>
+                        <p class="category">Categoria: ${product.category}</p>
                     </div>
                 `;
                 container.innerHTML += productHTML;
@@ -234,17 +244,4 @@
             const brandSet = new Set(products.map(product => product.brand));
             const sortedBrands = Array.from(brandSet).sort();
 
-            const brandList = document.getElementById('brandList');
-            brandList.innerHTML = '';
-
-            sortedBrands.forEach(brand => {
-                const brandItem = document.createElement('li');
-                brandItem.innerHTML = `<a href="#">${brand}</a>`;
-                brandList.appendChild(brandItem);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', renderBrands);
-    </script>
-</body>
-</html>
+            const brandList = document.getElementById('
